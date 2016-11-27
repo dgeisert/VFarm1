@@ -18,15 +18,22 @@ public class AreaStartStateMachine : StateMachine {
 	public override void ExitState(StateMachine checkMachine){}
 	public override void EnterState(StateMachine checkMachine){}
 	public override void InstanceInitiate(StateMachine checkMachine){
+		if (eventSystem == null) {
+			eventSystem = (GameObject) Resources.Load("EventSystem", typeof(GameObject));
+		}
+		GameObject.Instantiate (eventSystem);
 		if (PlayerMachine.playerObject == null) {	
+			if (usedRig == null) {
+				usedRig = (GameObject) Resources.Load("UsedRig", typeof(GameObject));
+			}
+			Debug.Log (usedRig);
 			GameObject.Instantiate (usedRig, transform.position + Vector3.up * InputMachine.playerHeight, transform.rotation);
 		} else {
 			PlayerMachine.playerObject.transform.position = transform.position + Vector3.up * InputMachine.playerHeight;
 			PlayerMachine.playerObject.transform.rotation = transform.rotation;
 			InputMachine.instance.UpdateState (InputMachine.instance.swipeForward, checkMachine);
 		}
-		StartCoroutine ("SetGos");
-		GameObject.Instantiate (eventSystem);
+		StartCoroutine ("SetGos");	
 	}
 	IEnumerator SetGos(){
 		yield return null;

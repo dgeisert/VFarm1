@@ -22,8 +22,8 @@ public class InputMachine: StateMachine {
 	public GameObject mainUI;
 	public GameObject loadingUI;
 	public GameObject blackout;
-	public float maxDistance = 10f;
-	public static float playerHeight = 1.2f;
+	public float maxDistance = 100f;
+	public static float playerHeight = 4.5f;
 	public float canvasDistance = 3f;
 	public float canvasWidth = 3f;
 	public float holdStart;
@@ -44,7 +44,9 @@ public class InputMachine: StateMachine {
 
 	public override void InstanceInitiate(StateMachine checkMachine){
 		InputMachine.instance = this;
-		thisCamera = GetComponent<Camera> ();
+		if (thisCamera == null) {
+			thisCamera = GetComponent<Camera> ();
+		}
 		OVRTouchpad.Create ();
 		OVRTouchpad.TouchHandler += HandleTouchHandler;
 		swipeUp = StateMaster.instance.inputUI;
@@ -141,7 +143,10 @@ public class InputMachine: StateMachine {
 		} else {
 			inputRay = thisCamera.ScreenPointToRay (Input.mousePosition);
 		}
+		Debug.Log (Physics.Raycast (inputRay, out hit, maxDistance));
 		if (Physics.Raycast (inputRay, out hit, maxDistance)) {
+			Debug.Log (hit);
+			Debug.Log (hit.transform);
 			if (hit.transform != null) {
 				return hit.transform.gameObject;
 			}

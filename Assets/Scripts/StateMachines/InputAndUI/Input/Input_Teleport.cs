@@ -60,6 +60,9 @@ public class Input_Teleport : InputMachine {
 		}
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){
+		if (obj == null) {
+			return;
+		}
 		if (obj.GetComponent<Blocked>() != null) {
 			return;
 		}
