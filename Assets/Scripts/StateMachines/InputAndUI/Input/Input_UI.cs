@@ -14,7 +14,6 @@ public class Input_UI : InputMachine {
 		InputMachine.instance.SetRoom (null);
 	}
 	public override void EnterState(StateMachine checkMachine){
-		InputMachine.instance.recticle.SetReticle ("Default");
 		InputMachine.instance.SetRoom (checkMachine.GetComponent<InputMachine> ().myRoom);
 		InputMachine.instance.mainUI.SetActive (true);
 		InputMachine.instance.loadingUI.SetActive (false);

@@ -17,13 +17,17 @@ public class InputMachine: StateMachine {
 	float backgroundMult = 0.032f;
 	public float deltaTime;
 	public TextMesh fpsText;
-	public RecticleMachine recticle;
+
+	public ReticleMachine reticle;
+	public GameObject setRightHand, setLeftHand, setReticle;
+	public bool canInteract;
+
 	public RoomMachine myRoom;
 	public GameObject mainUI;
 	public GameObject loadingUI;
 	public GameObject blackout;
-	public float maxDistance = 100f;
-	public static float playerHeight = 4.5f;
+	public float maxDistance = 10f;
+	public static float playerHeight = 1.2f;
 	public float canvasDistance = 3f;
 	public float canvasWidth = 3f;
 	public float holdStart;
@@ -33,12 +37,17 @@ public class InputMachine: StateMachine {
 	public static InputMachine instance;
 	public InputMachine swipeUp, swipeForward, swipeBack, swipeDown;
 	public List<GameObject> gos;
-	public List<GameObject> grounds;
 	public List<RoomMachine> rooms;
+	public List<Transform> repositionWithMoves;
 
 	void Start(){
 		if (GetComponent<Camera> () != null) {
 			Initiate ();
+		} else {
+			string script = this.GetType ().ToString ();
+			setRightHand = Resources.Load("Inputs/Hands/Primary/" + script) as GameObject;
+			setLeftHand = Resources.Load("Inputs/Hands/Secondary/" + script) as GameObject;
+			setReticle = Resources.Load("Inputs/Reticles/" + script) as GameObject;
 		}
 	}
 
@@ -72,7 +81,7 @@ public class InputMachine: StateMachine {
 		if (currentState == swipeBack) {
 			return swipeBack;
 		}
-		return StateMaster.instance.inputTutorial;
+		return StateMaster.instance.inputTeleport;
 	}
 
 	void HandleTouchHandler (object sender, System.EventArgs e)
@@ -114,7 +123,7 @@ public class InputMachine: StateMachine {
 	public virtual void SwipeBack(GameObject obj, Vector3 point, StateMachine checkMachine){}
 	public virtual void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){}
 	public virtual void Release(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public virtual void Hold(GameObject obj, Vector3 point, StateMachine checkMachine){}
+	public virtual void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){}
 
 
 	Vector3 GetSightedPoint(){
@@ -143,10 +152,7 @@ public class InputMachine: StateMachine {
 		} else {
 			inputRay = thisCamera.ScreenPointToRay (Input.mousePosition);
 		}
-		Debug.Log (Physics.Raycast (inputRay, out hit, maxDistance));
 		if (Physics.Raycast (inputRay, out hit, maxDistance)) {
-			Debug.Log (hit);
-			Debug.Log (hit.transform);
 			if (hit.transform != null) {
 				return hit.transform.gameObject;
 			}
@@ -154,7 +160,7 @@ public class InputMachine: StateMachine {
 		return null;
 	}
 	void Gaze(Vector3 point){
-		recticle.transform.position = point;
+		reticle.transform.position = point;
 	}
 
 	public override void InstanceUpdate(StateMachine checkMachine){
@@ -185,7 +191,7 @@ public class InputMachine: StateMachine {
 			}
 		}
 		if (is_holding) {
-			GetCurrentState().Hold (GetSightedObject(), GetSightedPoint(), this);
+			GetCurrentState().CheckInteract (GetSightedObject(), GetSightedPoint(), this);
 		}
 		if(Input.GetKeyDown(KeyCode.A)){
 			PlayerMachine.playerObject.transform.Rotate (0, -45, 0);
@@ -224,8 +230,40 @@ public class InputMachine: StateMachine {
 					go.SetActive (true);
 				}
 			}
-			foreach (GameObject go in grounds) {
-				go.SetActive (true);
+			foreach (Transform tr in repositionWithMoves) {
+				bool reset = false;
+				if (tr.localPosition.x > MovingGround.instance.squareScale / 2) {
+					reset = true;
+				}
+				if (tr.localPosition.x < -MovingGround.instance.squareScale / 2) {
+					reset = true;
+				}
+				if (tr.localPosition.z > MovingGround.instance.squareScale / 2) {
+					reset = true;
+				}
+				if (tr.localPosition.z < -MovingGround.instance.squareScale / 2) {
+					reset = true;
+				}
+				if (reset) {
+					tr.SetParent (
+						MovingGround.instance.ground[
+							new Vector2(
+								(Mathf.Round(tr.position.x/MovingGround.instance.squareScale) + MovingGround.instance.layout.x * 1000) % MovingGround.instance.layout.x,
+								(Mathf.Round(tr.position.z/MovingGround.instance.squareScale) + MovingGround.instance.layout.y * 1000) % MovingGround.instance.layout.y
+							)]);
+					while (tr.localPosition.x > MovingGround.instance.squareScale / 2) {
+						tr.localPosition -= new Vector3(MovingGround.instance.squareScale, 0, 0);
+					}
+					while (tr.localPosition.x < -MovingGround.instance.squareScale / 2) {
+						tr.localPosition += new Vector3(MovingGround.instance.squareScale, 0, 0);
+					}
+					while (tr.localPosition.z > MovingGround.instance.squareScale / 2) {
+						tr.localPosition -= new Vector3(0, 0, MovingGround.instance.squareScale);
+					}
+					while (tr.localPosition.z < -MovingGround.instance.squareScale / 2) {
+						tr.localPosition += new Vector3(0, 0, MovingGround.instance.squareScale);
+					}
+				}
 			}
 		}
 	}
@@ -242,9 +280,6 @@ public class InputMachine: StateMachine {
 			foreach (GameObject go in gos) {
 				go.SetActive (false);
 			}
-			foreach (GameObject go in grounds) {
-				go.SetActive (false);
-			}
 			blackout.SetActive (true);
 			currentRoom.gameObject.SetActive (true);
 			Transform tr = currentRoom.transform;
@@ -259,5 +294,9 @@ public class InputMachine: StateMachine {
 		renderDistance = maxDistance - 15;
 		thisCamera.farClipPlane = maxDistance * 20;
 		CheckObjects ();
+	}
+
+	public void SetLoading(){
+
 	}
 }

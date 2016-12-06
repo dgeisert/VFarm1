@@ -37,7 +37,6 @@ public class SceneLoadMachine : StateMachine {
 			StartSpin ();
 		}
 		if (is_active && !is_spinUp) {
-			InputMachine.instance.recticle.SetReticle ("Default");
 			InputMachine.instance.SetRoom (InputMachine.instance.myRoom);
 			InputMachine.instance.mainUI.SetActive (false);
 			InputMachine.instance.loadingUI.SetActive (true);
@@ -51,10 +50,7 @@ public class SceneLoadMachine : StateMachine {
 
 	IEnumerator SetFirstScene(){
 		yield return null;
-		InputMachine.instance.recticle.SetReticle ("Default");
-		InputMachine.instance.SetRoom (InputMachine.instance.myRoom);
-		InputMachine.instance.mainUI.SetActive (false);
-		InputMachine.instance.loadingUI.SetActive (true);
+		InputMachine.instance.SetLoading ();
 		SceneManager.LoadSceneAsync (scene);
 	}
 }

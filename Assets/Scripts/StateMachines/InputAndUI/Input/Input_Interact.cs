@@ -7,20 +7,13 @@ public class Input_Interact : InputMachine {
 		//checkMachine.UpdateState (StateMaster.instance.animalRunningAway, checkMachine);
 	}
 	public override void InstanceUpdate(StateMachine checkMachine){
-		if (!InputMachine.instance.is_holding) {
-			InputMachine.instance.recticle.SetReticle ("none");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
-		}
 	}
 
 	public override void ExitState(StateMachine checkMachine){
-		InputMachine.instance.recticle.right.SetHand ("none");
 	}
 	public override void EnterState(StateMachine checkMachine){
 		InputMachine.instance.timerDuration = 0.3f;
 		InputMachine.instance.timerStart = Time.time;
-		InputMachine.instance.recticle.SetReticle ("none");
-		InputMachine.instance.recticle.right.SetHand ("Interact");
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -36,39 +29,31 @@ public class Input_Interact : InputMachine {
 		checkMachine.UpdateState (InputMachine.instance.swipeBack, checkMachine);
 	}
 	public override void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public override void Hold(GameObject obj, Vector3 point, StateMachine checkMachine){
+	public override void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
 		if (obj == null) {
-			InputMachine.instance.recticle.SetReticle ("NoInteract");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
+			canInteract = false;
 			return;
 		}
 		if (obj.GetComponentInParent<Ground> () != null) {
-			InputMachine.instance.recticle.SetReticle ("NoInteract");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
+			canInteract = false;
 			return;
 		}
 		if (obj.GetComponentInParent<StateMachine> () == null) {
-			InputMachine.instance.recticle.SetReticle ("NoInteract");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
+			canInteract = false;
 			return;
 		}
-		InputMachine.instance.recticle.SetReticle ("Interact");
-		InputMachine.instance.recticle.right.SetHand ("none");
+		canInteract = true;
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){
 		if (InputMachine.instance.timerStart + InputMachine.instance.timerDuration > Time.time) {
 			return;
 		}
 		if (obj == null) {
-			InputMachine.instance.recticle.SetReticle ("NoInteract");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
 			return;
 		}
 		if (obj.GetComponent<Ground>() != null) {
 			return;
 		} else if (obj.transform.parent.GetComponent<Ground> () != null) {
-			InputMachine.instance.recticle.SetReticle ("NoInteract");
-			InputMachine.instance.recticle.right.SetHand ("Interact");
 			return;
 		}
 		if (obj.GetComponent<StateMachine> () == null) {

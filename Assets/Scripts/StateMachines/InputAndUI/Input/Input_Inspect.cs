@@ -7,14 +7,9 @@ public class Input_Inspect : InputMachine {
 		//checkMachine.UpdateState (StateMaster.instance.animalRunningAway, checkMachine);
 	}
 	public override void InstanceUpdate(StateMachine checkMachine){
-		if (!checkMachine.GetComponent<InputMachine>().is_holding) {
-			checkMachine.GetComponent<InputMachine> ().recticle.SetReticle ("none");
-			checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("Inspect");
-		}
 	}
 
 	public override void ExitState(StateMachine checkMachine){
-		checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("none");
 	}
 	public override void EnterState(StateMachine checkMachine){
 		checkMachine.GetComponent<InputMachine> ().timerDuration = 0.3f;
@@ -34,24 +29,17 @@ public class Input_Inspect : InputMachine {
 		checkMachine.UpdateState (checkMachine.GetComponent<InputMachine> ().swipeBack, checkMachine);
 	}
 	public override void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public override void Hold(GameObject obj, Vector3 point, StateMachine checkMachine){
+	public override void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
 		if (obj == null) {
-			checkMachine.GetComponent<InputMachine> ().recticle.SetReticle ("NoInteract");
-			checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("Inspect");
-			return;
+			canInteract = false;
 		}
 		if (obj.GetComponentInParent<Ground> () != null) {
-			checkMachine.GetComponent<InputMachine> ().recticle.SetReticle ("NoInteract");
-			checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("Inspect");
-			return;
+			canInteract = false;
 		}
 		if (obj.GetComponentInParent<StateMachine> () == null) {
-			checkMachine.GetComponent<InputMachine> ().recticle.SetReticle ("NoInteract");
-			checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("Inspect");
-			return;
+			canInteract = false;
 		}
-		checkMachine.GetComponent<InputMachine> ().recticle.SetReticle ("Inspect");
-		checkMachine.GetComponent<InputMachine> ().recticle.right.SetHand ("none");
+		canInteract = true;
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){}
 }

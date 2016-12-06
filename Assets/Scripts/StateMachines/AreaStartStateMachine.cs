@@ -26,7 +26,6 @@ public class AreaStartStateMachine : StateMachine {
 			if (usedRig == null) {
 				usedRig = (GameObject) Resources.Load("UsedRig", typeof(GameObject));
 			}
-			Debug.Log (usedRig);
 			GameObject.Instantiate (usedRig, transform.position + Vector3.up * InputMachine.playerHeight, transform.rotation);
 		} else {
 			PlayerMachine.playerObject.transform.position = transform.position + Vector3.up * InputMachine.playerHeight;
@@ -38,19 +37,16 @@ public class AreaStartStateMachine : StateMachine {
 	IEnumerator SetGos(){
 		yield return null;
 		InputMachine.instance.gos = new List<GameObject> ();
-		//actually put a list of gameobjects together that will be watched for rendering when close enough
 		foreach (GameObject go in FindObjectsOfType<GameObject> ()) {
-			if (go.GetComponent<Ground> () != null
-				&& go.GetComponentInParent<PlayerMachine>() == null
-				&& go.GetComponentInParent<AreaStartStateMachine> () == null
+			if (go.GetComponentInParent<HOTweenManager> () == null
+			    && go.GetComponentInParent<OVRTouchpadHelper> () == null) {
+			} else if(go.GetComponentInParent<NoCull> () != null
 				&& go.GetComponentInParent<RoomMachine> () == null) {
-				InputMachine.instance.grounds.Add (go);
-			} else if (go.GetComponent<MovingGround> () == null
-				&& go.GetComponent<Light> () == null
-				&& go.GetComponentInParent<PlayerMachine>() == null
-				&& go.GetComponentInParent<Ground> () == null
-				&& go.GetComponentInParent<AreaStartStateMachine> () == null
-				&& go.GetComponentInParent<RoomMachine> () == null) {
+				if (!go.GetComponentInParent<NoCull> ().includeChildren
+				    && go.GetComponent<NoCull> () == null) {
+					InputMachine.instance.gos.Add (go);
+				}
+			} else if (go.GetComponentInParent<RoomMachine> () == null) {
 				InputMachine.instance.gos.Add (go);
 			}
 		}

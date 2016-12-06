@@ -10,10 +10,8 @@ public class Input_Loading : InputMachine {
 	}
 
 	public override void ExitState(StateMachine checkMachine){
-		InputMachine.instance.recticle.right.SetHand ("none");
 	}
 	public override void EnterState(StateMachine checkMachine){
-		InputMachine.instance.recticle.SetReticle ("none");
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -25,8 +23,17 @@ public class Input_Loading : InputMachine {
 	public override void SwipeBack(GameObject obj, Vector3 point, StateMachine checkMachine){
 	}
 	public override void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public override void Hold(GameObject obj, Vector3 point, StateMachine checkMachine){
-		InputMachine.instance.recticle.SetReticle ("Default");
+	public override void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
+		if (obj == null) {
+			canInteract = false;
+		}
+		if (obj.GetComponentInParent<Ground> () != null) {
+			canInteract = false;
+		}
+		if (obj.GetComponentInParent<StateMachine> () == null) {
+			canInteract = false;
+		}
+		canInteract = true;
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){}
 }

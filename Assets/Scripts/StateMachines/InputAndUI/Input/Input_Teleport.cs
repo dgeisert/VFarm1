@@ -6,20 +6,14 @@ public class Input_Teleport : InputMachine {
 	public override void CheckUpdate(StateMachine checkMachine){
 	}
 	public override void InstanceUpdate(StateMachine checkMachine){
-		if (!InputMachine.instance.is_holding) {
-			InputMachine.instance.recticle.SetReticle ("none");
-			InputMachine.instance.recticle.right.SetHand ("Teleport");
-		}
 	}
 
 	public override void ExitState(StateMachine checkMachine){
-		InputMachine.instance.recticle.right.SetHand ("none");
 	}
 	public override void EnterState(StateMachine checkMachine){
 		InputMachine.instance.timerDuration = 0.3f;
 		InputMachine.instance.timerStart = Time.time;
-		InputMachine.instance.recticle.SetReticle ("none");
-		InputMachine.instance.recticle.right.SetHand ("Teleport");
+		InputMachine.instance.reticle.SetReticle (this);
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -37,43 +31,27 @@ public class Input_Teleport : InputMachine {
 	public override void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){
 		
 	}
-	public override void Hold(GameObject obj, Vector3 point, StateMachine checkMachine){
+	public override void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
 		if (obj == null) {
-			InputMachine.instance.recticle.SetReticle ("NoTeleport");
-			InputMachine.instance.recticle.right.SetHand ("Teleport");
+			canInteract = false;
 		}
 		else if (obj.GetComponent<Blocked>() != null) {
-			InputMachine.instance.recticle.SetReticle ("NoTeleport");
-			InputMachine.instance.recticle.right.SetHand ("Teleport");
+			canInteract = false;
 		}
 		else if (obj.GetComponent<Platform>() != null) {
-			InputMachine.instance.recticle.SetReticle ("Teleport");
-			InputMachine.instance.recticle.right.SetHand ("none");
+			canInteract = true;
 		}
-		else if (InputMachine.instance.recticle.is_nearObjects
-			|| !InputMachine.instance.recticle.is_onGround) {
-			InputMachine.instance.recticle.SetReticle ("NoTeleport");
-			InputMachine.instance.recticle.right.SetHand ("Teleport");
+		else if (InputMachine.instance.reticle.is_nearObjects
+			|| !InputMachine.instance.reticle.is_onGround) {
+			canInteract = false;
 		} else {
-			InputMachine.instance.recticle.SetReticle ("Teleport");
-			InputMachine.instance.recticle.right.SetHand ("none");
+			canInteract = true;
 		}
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){
-		if (obj == null) {
-			return;
-		}
-		if (obj.GetComponent<Blocked>() != null) {
-			return;
-		}
-		if (InputMachine.instance.timerStart + InputMachine.instance.timerDuration > Time.time) {
-			return;
-		}
-		else if (obj.GetComponent<Platform> ()) {
-			PlayerMachine.playerObject.transform.position = point + transform.up;
-		}
-		else if (!InputMachine.instance.recticle.is_nearObjects
-			&& InputMachine.instance.recticle.is_onGround) {
+		if (obj.GetComponent<Platform> () ||
+			(!InputMachine.instance.reticle.is_nearObjects
+				&& InputMachine.instance.reticle.is_onGround)) {
 			PlayerMachine.playerObject.transform.position = point 
 				+ PlayerMachine.playerObject.transform.up * InputMachine.playerHeight;
 		}

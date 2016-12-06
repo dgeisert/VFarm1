@@ -92,58 +92,6 @@ public class UIManager : StateMachine {
 		if (currentSelected == null) {
 			return newAction;
 		}
-		switch(currentSelected.name.ToLower()){
-		case "inventory":
-			newAction = StateMaster.instance.inputShop;
-			break;
-		case "sword":
-			newAction = StateMaster.instance.inputSword;
-			break;
-		case "shield":
-			newAction = StateMaster.instance.inputShield;
-			break;
-		case "shovel":
-			newAction = StateMaster.instance.inputShovel;
-			break;
-		case "hammer":
-			newAction = StateMaster.instance.inputHammer;
-			break;
-		case "saw":
-			newAction = StateMaster.instance.inputSaw;
-			break;
-		case "sickle":
-			newAction = StateMaster.instance.inputSickle;
-			break;
-		case "inspect":
-			newAction = StateMaster.instance.inputInspect;
-			break;
-		case "teleport":
-			newAction = StateMaster.instance.inputTeleport;
-			break;
-		case "interact":
-			newAction = StateMaster.instance.inputInteract;
-			break;
-		case "shop":
-			newAction = StateMaster.instance.inputShop;
-			break;
-		case "axe":
-			newAction = StateMaster.instance.inputAxe;
-			break;
-		case "bucket":
-			newAction = StateMaster.instance.inputBucket;
-			break;
-		case "rope":
-			newAction = StateMaster.instance.inputRope;
-			break;
-		case "pickaxe":
-			newAction = StateMaster.instance.inputPickaxe;
-			break;
-		case "leaf":
-			newAction = StateMaster.instance.inputLeaf;
-			break;
-		default:
-			break;
-		}
 		return newAction;
 	}
 }
