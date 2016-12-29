@@ -26,7 +26,9 @@ public class AreaStartStateMachine : StateMachine {
 			if (usedRig == null) {
 				usedRig = (GameObject) Resources.Load("UsedRig", typeof(GameObject));
 			}
-			GameObject.Instantiate (usedRig, transform.position + Vector3.up * InputMachine.playerHeight, transform.rotation);
+			Vector3 startPosition = transform.position
+				+ Vector3.up * InputMachine.playerHeight;
+			GameObject.Instantiate (usedRig, startPosition, transform.rotation);
 		} else {
 			PlayerMachine.playerObject.transform.position = transform.position + Vector3.up * InputMachine.playerHeight;
 			PlayerMachine.playerObject.transform.rotation = transform.rotation;

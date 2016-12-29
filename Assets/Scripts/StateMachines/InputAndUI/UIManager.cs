@@ -13,7 +13,6 @@ public class UIManager : StateMachine {
 	public Image swipeUp, swipeDown, swipeBack, swipeForward;
 	public static UIManager instance;
 	public GameObject[] Buttons;
-	Dictionary<string, InputMachine> inputs = new Dictionary<string, InputMachine>();
 
 	public void Start(){
 		Initiate ();

@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Plant_Fallow : StateMachine {
+public class Plant_Fallow : PlantMachine {
 
 	public override void EnterState(StateMachine checkMachine){
-		checkMachine.timerDuration = checkMachine.GetComponent<PlantMachine> ().growTime;
-		checkMachine.timerStart = Time.time;
+		checkMachine.timer.StartTimer (checkMachine.GetComponent<PlantMachine> ().growTime);
 		checkMachine.phase = 0;
 	}
 	public override void ExitState(StateMachine checkMachine){
@@ -13,7 +12,7 @@ public class Plant_Fallow : StateMachine {
 	}
 
 	public override void CheckUpdate(StateMachine checkMachine){
-		if (checkMachine.timerStart + checkMachine.timerDuration <= Time.time) {
+		if (checkMachine.timer.CheckTimer()) {
 			Destroy (checkMachine.gameObject);
 		}
 	}

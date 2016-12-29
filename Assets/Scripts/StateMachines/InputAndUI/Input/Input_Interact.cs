@@ -12,8 +12,7 @@ public class Input_Interact : InputMachine {
 	public override void ExitState(StateMachine checkMachine){
 	}
 	public override void EnterState(StateMachine checkMachine){
-		InputMachine.instance.timerDuration = 0.3f;
-		InputMachine.instance.timerStart = Time.time;
+		checkMachine.timer.StartTimer (0.3f);
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -45,7 +44,7 @@ public class Input_Interact : InputMachine {
 		canInteract = true;
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){
-		if (InputMachine.instance.timerStart + InputMachine.instance.timerDuration > Time.time) {
+		if (checkMachine.timer.CheckTimer()) {
 			return;
 		}
 		if (obj == null) {

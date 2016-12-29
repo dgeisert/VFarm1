@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Plant_Planted : StateMachine {
+public class Plant_Planted : PlantMachine {
 
 	public override void EnterState(StateMachine checkMachine){
 		
@@ -11,7 +11,7 @@ public class Plant_Planted : StateMachine {
 	}
 
 	public override void CheckUpdate(StateMachine checkMachine){
-		if (checkMachine.timerStart + checkMachine.timerDuration <= Time.time) {
+		if (checkMachine.timer.CheckTimer()) {
 
 		}
 	}

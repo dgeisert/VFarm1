@@ -27,11 +27,13 @@ public class HandMachine : StateMachine {
 		if (is_right) {
 			GameObject newHand = (GameObject)GameObject.Instantiate (setValue.setRightHand, transform);
 			newHand.transform.localPosition = Vector3.zero;
+			newHand.transform.rotation = InputMachine.instance.transform.rotation;
 			handInstance = newHand.GetComponent<HandInstance> ();
 		} else {
 			GameObject newHand = (GameObject)GameObject.Instantiate (setValue.setLeftHand, transform);
 			newHand.transform.localPosition = Vector3.zero;
 			newHand.transform.localScale = new Vector3 (-1, 1, 1);
+			newHand.transform.rotation = InputMachine.instance.transform.rotation;
 			handInstance = newHand.GetComponent<HandInstance> ();
 		}
 	}

@@ -1,15 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class TreeMachine : MonoBehaviour {
+public class TreeMachine : StateMachine {
 
-	// Use this for initialization
-	void Start () {
-	
+	public GameObject logs, tree;
+	public float chopTime = 1;
+	public Timer growthTimer;
+
+	public override void InstanceInitiate(StateMachine checkMachine){
+		growthTimer = new Timer (this);
+		UpdateState (StateMaster.instance.treeGrowing, this);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public override List<InputMachine> InstanceHover(){
+		return new List<InputMachine>(){StateMaster.instance.inputChop };
+	}
+
+	public override void InstanceInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
+		currentState.InstanceInteract (obj, point, checkMachine);
+	}
+
+	public bool CanChop(){
+		return (currentState == StateMaster.instance.treeGrowing);
 	}
 }

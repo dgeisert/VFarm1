@@ -9,7 +9,7 @@ public class HouseMachine : StateMachine {
 
 	public override void InstanceInitiate(StateMachine checkMachine){
 		UpdateState (StateMaster.instance.houseOpen, this);
-		timerStart = Time.time;
+		timer.StartTimer ();
 	}
 
 	public override void InstanceInteract(GameObject obj, Vector3 point, StateMachine checkMachine){

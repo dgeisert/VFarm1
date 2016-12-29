@@ -18,7 +18,7 @@ public class Animal_Roaming : AnimalMachine {
 		} else {
 			
 		}
-		if (checkMachine.timerStart + checkMachine.timerDuration < Time.time) {
+		if (checkMachine.timer.CheckTimer()) {
 			NewTarget (checkMachine);
 		}
 	}
@@ -32,7 +32,6 @@ public class Animal_Roaming : AnimalMachine {
 
 	public void NewTarget(StateMachine checkMachine){
 		checkMachine.GetComponent<AnimalMachine> ().SetTarget (checkMachine.transform.position + new Vector3 ((Random.value - 0.5f) * 15, 0, (Random.value - 0.5f) * 15));
-		checkMachine.timerStart = Time.time;
-		checkMachine.timerDuration = Random.value * 10;
+		checkMachine.timer.StartTimer (Random.value * 10);
 	}
 }

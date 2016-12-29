@@ -15,10 +15,6 @@ public class Animal_Crying : AnimalMachine {
 		checkMachine.GetComponent<AnimalMachine>().anim.SetBool ("IsCrying", true);
 	}
 	public override void InstanceInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
-		if(checkMachine.GetComponent<FoxTutorial>() != null){
-			checkMachine.GetComponent<FoxTutorial>().StopCrying();
-		} else {
-			checkMachine.UpdateState (StateMaster.instance.animalRunningAway, checkMachine);
-		}
+		checkMachine.UpdateState (StateMaster.instance.animalRunningAway, checkMachine);
 	}
 }

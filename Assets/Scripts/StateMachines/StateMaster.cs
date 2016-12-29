@@ -3,10 +3,11 @@ using System.Collections;
 
 public class StateMaster : MonoBehaviour {
 
-	public StateMachine plantDry, plantFallow, plantGrown, plantGrowing, plantPlanted, plantWithered;
-	public StateMachine animalRoaming, animalCrying, animalFollowing, animalRunningAway;
+	public PlantMachine plantDry, plantFallow, plantGrown, plantGrowing, plantPlanted, plantWithered;
+	public TreeMachine treeGrowing, treeFallen;
+	public AnimalMachine animalRoaming, animalCrying, animalFollowing, animalRunningAway;
 	public InputMachine inputUI, inputTeleport, inputInteract
-	, inputPickUp, inputInspect;
+	, inputPickUp, inputInspect, inputChop, inputGather;
 	public HouseMachine houseOpen;
 	public GameObject number, timer;
 
@@ -14,12 +15,18 @@ public class StateMaster : MonoBehaviour {
 
 	public void Awake(){
 		StateMaster.instance = this;
+		timer = (GameObject)Resources.Load<GameObject> ("Timer");
+
+
 		plantDry = gameObject.AddComponent<Plant_Dry>();
 		plantFallow = gameObject.AddComponent<Plant_Fallow>();
 		plantGrowing = gameObject.AddComponent<Plant_Growing>();
 		plantGrown = gameObject.AddComponent<Plant_Grown>();
 		plantPlanted = gameObject.AddComponent<Plant_Planted>();
 		plantWithered = gameObject.AddComponent<Plant_Withered>();
+
+		treeGrowing = gameObject.AddComponent<Tree_Growing>();
+		treeFallen = gameObject.AddComponent<Tree_Fallen>();
 
 		animalCrying = gameObject.AddComponent<Animal_Crying>();
 		animalFollowing = gameObject.AddComponent<Animal_Following>();
@@ -31,6 +38,8 @@ public class StateMaster : MonoBehaviour {
 		inputInteract = gameObject.AddComponent<Input_Interact>();
 		inputPickUp = gameObject.AddComponent<Input_PickUp>();
 		inputInspect = gameObject.AddComponent<Input_Inspect>();
+		inputChop = gameObject.AddComponent<Input_Chop>();
+		inputGather = gameObject.AddComponent<Input_Gather>();
 
 		houseOpen = gameObject.AddComponent<House_Open> ();
 	}

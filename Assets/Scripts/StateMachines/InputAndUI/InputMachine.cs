@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using UnityEngine.VR;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Holoville.HOTween;
 
 public class InputMachine: StateMachine {
+
+	public GameObject[] spawners;
 
 	public Camera thisCamera;
 	public RoomMachine currentRoom;
 	public float renderDistance = 50;
 	public float baseRenderDistance = 50;
-	float lastRendererCheck;
 	float lastSwipeTime;
 	bool is_swipe = false;
 	float backgroundMult = 0.032f;
@@ -26,6 +28,7 @@ public class InputMachine: StateMachine {
 	public GameObject mainUI;
 	public GameObject loadingUI;
 	public GameObject blackout;
+	public SpriteRenderer blackoutDip;
 	public float maxDistance = 10f;
 	public static float playerHeight = 1.2f;
 	public float canvasDistance = 3f;
@@ -57,7 +60,6 @@ public class InputMachine: StateMachine {
 			thisCamera = GetComponent<Camera> ();
 		}
 		OVRTouchpad.Create ();
-		OVRTouchpad.TouchHandler += HandleTouchHandler;
 		swipeUp = StateMaster.instance.inputUI;
 		swipeDown = StateMaster.instance.inputInteract;
 		swipeForward = StateMaster.instance.inputTeleport;
@@ -66,61 +68,40 @@ public class InputMachine: StateMachine {
 		EventSystem.current.sendNavigationEvents = false;
 		thisCamera.layerCullSpherical = true;
 		Application.targetFrameRate = 240;
+		HOTween.To(blackoutDip, 5f, new TweenParms().Prop("color", new Color(0f, 0f, 0f, 0f)));
+		StartCoroutine ("InitialCheckObjects");
+	}
+
+	public IEnumerator InitialCheckObjects(){
+		yield return new WaitForSeconds(0.5f);
+		CheckObjects ();
+		CheckObjects ();
 	}
 
 	InputMachine GetCurrentState(){
-		if (currentState == swipeUp) {
-			return swipeUp;
-		}
-		if (currentState == swipeDown) {
-			return swipeDown;
-		}
-		if (currentState == swipeForward) {
-			return swipeForward;
-		}
-		if (currentState == swipeBack) {
-			return swipeBack;
-		}
-		return StateMaster.instance.inputTeleport;
+		return (InputMachine) currentState;
 	}
 
-	void HandleTouchHandler (object sender, System.EventArgs e)
-	{
-		OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
-		if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Up) {
-			if (holdStart + holdingTimeSwipeNegation > Time.time) {
-				GetCurrentState ().SwipeUp (GetSightedObject (), GetSightedPoint (), this);
-				is_swipe = true;
-				lastSwipeTime = Time.time;
-			}
-		}
-		if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Down) {
-			if (holdStart + holdingTimeSwipeNegation > Time.time) {
-				GetCurrentState().SwipeDown (GetSightedObject(), GetSightedPoint(), this);
-				is_swipe = true;
-				lastSwipeTime = Time.time;
-			}
-		}
-		if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left) {
-			if (holdStart + holdingTimeSwipeNegation > Time.time) {
-				GetCurrentState().SwipeForward (GetSightedObject(), GetSightedPoint(), this);
-				is_swipe = true;
-				lastSwipeTime = Time.time;
-			}
-		}
-		if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right) {
-			if (holdStart + holdingTimeSwipeNegation > Time.time) {
-				GetCurrentState().SwipeBack (GetSightedObject(), GetSightedPoint(), this);
-				is_swipe = true;
-				lastSwipeTime = Time.time;
-			}
-		}
+	public virtual void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
+		//GetCurrentState ().SwipeUp (obj, point, checkMachine);
+		is_swipe = true;
+		lastSwipeTime = Time.time;
 	}
-
-	public virtual void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public virtual void SwipeDown(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public virtual void SwipeForward(GameObject obj, Vector3 point, StateMachine checkMachine){}
-	public virtual void SwipeBack(GameObject obj, Vector3 point, StateMachine checkMachine){}
+	public virtual void SwipeDown(GameObject obj, Vector3 point, StateMachine checkMachine){
+		//GetCurrentState().SwipeDown (obj, point, checkMachine);
+		is_swipe = true;
+		lastSwipeTime = Time.time;
+	}
+	public virtual void SwipeForward(GameObject obj, Vector3 point, StateMachine checkMachine){
+		//GetCurrentState().SwipeForward (obj, point, checkMachine);
+		is_swipe = true;
+		lastSwipeTime = Time.time;
+	}
+	public virtual void SwipeBack(GameObject obj, Vector3 point, StateMachine checkMachine){
+		//GetCurrentState().SwipeBack (obj, point, checkMachine);
+		is_swipe = true;
+		lastSwipeTime = Time.time;
+	}
 	public virtual void Tap(GameObject obj, Vector3 point, StateMachine checkMachine){}
 	public virtual void Release(GameObject obj, Vector3 point, StateMachine checkMachine){}
 	public virtual void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){}
@@ -164,34 +145,38 @@ public class InputMachine: StateMachine {
 	}
 
 	public override void InstanceUpdate(StateMachine checkMachine){
+		GameObject sightedObject = GetSightedObject ();
+		Vector3 sightedPoint = GetSightedPoint ();
 		if (lastSwipeTime + 0.1f < Time.time) {
 			is_swipe = false;
 		}
-		if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			GetCurrentState().SwipeUp (GetSightedObject(), GetSightedPoint(), this);
+		if (Input.GetKeyDown(KeyCode.UpArrow) || OVRInput.GetUp(OVRInput.RawButton.DpadUp)) {
+			SwipeUp (sightedObject, sightedPoint, this);
 		}
-		if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			GetCurrentState().SwipeDown (GetSightedObject(), GetSightedPoint(), this);
+		if (Input.GetKeyDown(KeyCode.DownArrow) || OVRInput.GetUp(OVRInput.RawButton.DpadDown)) {
+			SwipeDown (sightedObject, sightedPoint, this);
 		}
-		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			GetCurrentState().SwipeBack (GetSightedObject(), GetSightedPoint(), this);
+		if (Input.GetKeyDown(KeyCode.LeftArrow) || OVRInput.GetUp(OVRInput.RawButton.DpadLeft)) {
+			SwipeBack (sightedObject, sightedPoint, this);
 		}
-		if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			GetCurrentState().SwipeForward (GetSightedObject(), GetSightedPoint(), this);
+		if (Input.GetKeyDown(KeyCode.RightArrow) || OVRInput.GetUp(OVRInput.RawButton.DpadRight)) {
+			SwipeForward (sightedObject, sightedPoint, this);
 		}
 		if (Input.GetMouseButtonDown(0) && !is_swipe) {
 			is_holding = true;
 			holdStart = Time.time;
-			GetCurrentState().Tap (GetSightedObject(), GetSightedPoint(), this);
+			GetCurrentState().Tap (sightedObject, sightedPoint, this);
 		}
 		if (Input.GetMouseButtonUp(0)) {
 			is_holding = false;
 			if (!is_swipe) {
-				GetCurrentState ().Release (GetSightedObject (), GetSightedPoint (), this);
+				GetCurrentState ().Release (sightedObject, sightedPoint, this);
 			}
 		}
 		if (is_holding) {
-			GetCurrentState().CheckInteract (GetSightedObject(), GetSightedPoint(), this);
+			GetCurrentState().CheckInteract (sightedObject, sightedPoint, this);
+		} else {
+			CheckInteractionChange (sightedObject);
 		}
 		if(Input.GetKeyDown(KeyCode.A)){
 			PlayerMachine.playerObject.transform.Rotate (0, -45, 0);
@@ -199,35 +184,67 @@ public class InputMachine: StateMachine {
 		if(Input.GetKeyDown(KeyCode.D)){
 			PlayerMachine.playerObject.transform.Rotate (0, 45, 0);
 		}
+		if(Input.GetKeyDown(KeyCode.M)){
+			foreach(GameObject go in gos){
+				Destroy(go);
+			}
+		}
+		if(Input.GetKeyDown(KeyCode.N)){
+			foreach (GameObject go in spawners) {
+				GameObject.Instantiate (go);
+			}
+		}
+		if(Input.GetKeyDown(KeyCode.K)){
+			PlayerMachine.instance.SaveGos ();
+		}
+		if(Input.GetKeyDown(KeyCode.L)){
+			PlayerMachine.instance.LoadGos ();
+		}
 		Gaze (GetSightedPoint ());
 		currentState.InstanceUpdate (this);
 		if (InputMachine.instance != this) {
 			return;
 		}
-		if (lastRendererCheck + 0.5f < Time.time) {
-			CheckObjects();
-		}
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 		float fps = 1.0f / deltaTime;
-		fpsText.text = string.Format("{0:0.} fps", fps);;
+		fpsText.text = string.Format("{0:0.} fps", fps);
 	}
+
+	public void CheckInteractionChange(GameObject sightedObject){
+		if (sightedObject != null) {
+			StateMachine sm = sightedObject.GetComponentInParent<StateMachine> ();
+			if (sm != null) {
+				List<InputMachine> inputs = sm.InstanceHover ();
+				if (inputs != null) {
+					if (inputs.Count == 1) {
+						UpdateState (inputs [0], this);
+						reticle.SetReticle (inputs [0]);
+					}
+				}
+			}
+		}
+	}
+
 	public void SpawnUI(GameObject prefab){
 		Quaternion quat = new Quaternion ();
 		quat.eulerAngles = new Vector3 (0, transform.rotation.eulerAngles.y, 0);
 	}
 
 	public void CheckObjects(){
+		gos.RemoveAll (item => item == null);
+		repositionWithMoves.RemoveAll (item => item == null);
 		if (currentRoom == null) {
-			lastRendererCheck = Time.time;
 			foreach (GameObject go in gos) {
-				float magnitude = Vector3.Magnitude (go.transform.lossyScale);
-				if (go.GetComponent<MeshRenderer> () != null) {
-					magnitude *= Vector3.Magnitude (go.GetComponent<MeshRenderer> ().bounds.size);
-				}
-				if ((renderDistance + magnitude) < Vector3.Distance (transform.position, go.transform.position)) {
-					go.SetActive (false);
-				} else {
-					go.SetActive (true);
+				if (go != null) {
+					float magnitude = Vector3.Magnitude (go.transform.lossyScale);
+					if (go.GetComponent<MeshRenderer> () != null) {
+						magnitude *= Vector3.Magnitude (go.GetComponent<MeshRenderer> ().bounds.size);
+					}
+					if ((renderDistance + magnitude) < Vector3.Distance (transform.position, go.transform.position)) {
+						go.SetActive (false);
+					} else {
+						go.SetActive (true);
+					}
 				}
 			}
 			foreach (Transform tr in repositionWithMoves) {
@@ -298,5 +315,19 @@ public class InputMachine: StateMachine {
 
 	public void SetLoading(){
 
+	}
+
+	public void DipToColor(Color col, float duration){
+		StartCoroutine (DipToColorStart(col, duration));
+	}
+	IEnumerator DipToColorStart(Color col, float duration){
+		blackoutDip.gameObject.SetActive(true);
+		blackoutDip.color = new Color (col.r, col.g, col.b, 0f);
+		HOTween.To(blackoutDip, duration, new TweenParms().Prop("color", col));
+		yield return new WaitForSeconds (duration);
+		CheckObjects ();
+		HOTween.To(blackoutDip, duration, new TweenParms().Prop("color", new Color(col.r, col.g, col.b, 0f)));
+		yield return new WaitForSeconds (duration);
+		blackoutDip.gameObject.SetActive(false);
 	}
 }

@@ -6,6 +6,7 @@ public class ReticleInstance : MonoBehaviour {
 	public GameObject noHold, holdTrue, holdFalse;
 	public GameObject current;
 	public LineRenderer lineRenderer;
+	public Transform timerHolder;
 
 	public void SetNoHold(){
 		if (current == noHold) {
@@ -47,6 +48,6 @@ public class ReticleInstance : MonoBehaviour {
 		}
 	}
 	private Vector3 MakeLine(Vector3 fromPoint, Vector3 toPoint, float t){
-		return new Vector3(fromPoint.x - (fromPoint.x - toPoint.x) / 20 * t,(t * (20 - t))/50 + (10 - t)/10, fromPoint.z - (fromPoint.z - toPoint.z) / 20 * t);
+		return new Vector3(fromPoint.x - (fromPoint.x - toPoint.x) / 40 * t,(t * (20 - t))/50 + (10 - t)/8, fromPoint.z - (fromPoint.z - toPoint.z) / 40 * t);
 	}
 }

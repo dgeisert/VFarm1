@@ -11,9 +11,7 @@ public class Input_Teleport : InputMachine {
 	public override void ExitState(StateMachine checkMachine){
 	}
 	public override void EnterState(StateMachine checkMachine){
-		InputMachine.instance.timerDuration = 0.3f;
-		InputMachine.instance.timerStart = Time.time;
-		InputMachine.instance.reticle.SetReticle (this);
+		checkMachine.timer.StartTimer (0.3f);
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -49,11 +47,19 @@ public class Input_Teleport : InputMachine {
 		}
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){
-		if (obj.GetComponent<Platform> () ||
-			(!InputMachine.instance.reticle.is_nearObjects
-				&& InputMachine.instance.reticle.is_onGround)) {
-			PlayerMachine.playerObject.transform.position = point 
-				+ PlayerMachine.playerObject.transform.up * InputMachine.playerHeight;
+		if (obj != null) {
+			if (obj.GetComponent<Platform> () ||
+			    (!InputMachine.instance.reticle.is_nearObjects
+					&& InputMachine.instance.reticle.is_onGround)) {
+				StartCoroutine (Teleport(point, 0.1f));
+			}
 		}
+	}
+
+	IEnumerator Teleport(Vector3 point, float duration){
+		InputMachine.instance.DipToColor (new Color(0f,0f,0f,0.5f), duration);
+		yield return new WaitForSeconds (duration);
+		PlayerMachine.playerObject.transform.position = point
+			+ PlayerMachine.playerObject.transform.up * InputMachine.playerHeight;
 	}
 }

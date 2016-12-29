@@ -12,8 +12,7 @@ public class Input_Inspect : InputMachine {
 	public override void ExitState(StateMachine checkMachine){
 	}
 	public override void EnterState(StateMachine checkMachine){
-		checkMachine.GetComponent<InputMachine> ().timerDuration = 0.3f;
-		checkMachine.GetComponent<InputMachine> ().timerStart = Time.time;
+		checkMachine.timer.StartTimer (0.3f);
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){
@@ -32,14 +31,18 @@ public class Input_Inspect : InputMachine {
 	public override void CheckInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
 		if (obj == null) {
 			canInteract = false;
+			return;
 		}
-		if (obj.GetComponentInParent<Ground> () != null) {
-			canInteract = false;
+		StateMachine sm = obj.GetComponentInParent<StateMachine> ();
+		if (sm != null) {
+			if (sm.GetComponent<Ground> () != null) {
+				canInteract = false;
+				return;
+			}
+			canInteract = true;
+			return;
 		}
-		if (obj.GetComponentInParent<StateMachine> () == null) {
-			canInteract = false;
-		}
-		canInteract = true;
+		canInteract = false;
 	}
 	public override void Release(GameObject obj, Vector3 point, StateMachine checkMachine){}
 }

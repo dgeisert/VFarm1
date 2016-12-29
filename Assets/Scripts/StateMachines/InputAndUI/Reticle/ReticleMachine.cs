@@ -14,10 +14,11 @@ public class ReticleMachine : StateMachine {
 	}
 
 	public override void InstanceInitiate(StateMachine checkMachine){
+		timer.timerDuration = 0.1f;
 	}
 
 	public void SetReticle(InputMachine setValue){
-		if (currentInteractionState == setValue) {
+		if (currentInteractionState == setValue && reticleInstance != null) {
 			return;
 		}
 		left.SetHand (setValue);
@@ -31,10 +32,23 @@ public class ReticleMachine : StateMachine {
 		reticleInstance = newHand.GetComponent<ReticleInstance> ();
 	}
 
+	public Transform getTimerLocation(){
+		if (reticleInstance != null) {
+			if (reticleInstance.timerHolder == null) {
+				return reticleInstance.transform;
+			} else {
+				return reticleInstance.timerHolder;
+			}
+		}
+		return transform;
+	}
+
 	public override void InstanceUpdate(StateMachine checkMachine) {
 		Vector3 targetLocation = transform.position + 2 * (transform.position - PlayerMachine.playerObject.transform.position);
-		transform.LookAt (new Vector3(targetLocation.x, transform.position.y, targetLocation.z));
-		if (timerStart + timerDuration < Time.time) {
+		if (reticleInstance != null) {
+			reticleInstance.transform.rotation = InputMachine.instance.transform.rotation;
+		}
+		if (timer.CheckTimer()) {
 			is_nearObjects = false;
 		}
 		if (reticleInstance != null) {
@@ -52,7 +66,7 @@ public class ReticleMachine : StateMachine {
 
 	public void OnTriggerStay(Collider col){
 		if (col.GetComponent<Ground> () == null && col.GetComponent<PlayerMachine> () == null) {
-			timerStart = Time.time;
+			timer.StartTimer ();
 			is_nearObjects = true;
 		}
 		if (col.GetComponent<Ground> () != null) {

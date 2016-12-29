@@ -12,8 +12,7 @@ public class Input_PickUp : InputMachine {
 	public override void ExitState(StateMachine checkMachine){
 	}
 	public override void EnterState(StateMachine checkMachine){
-		checkMachine.GetComponent<InputMachine> ().timerDuration = 0.3f;
-		checkMachine.GetComponent<InputMachine> ().timerStart = Time.time;
+		checkMachine.timer.StartTimer (0.3f);
 	}
 
 	public override void SwipeUp(GameObject obj, Vector3 point, StateMachine checkMachine){

@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class StateMachine: MonoBehaviour {
-
-	public float timerStart = 0f;
-	public float timerDuration = 0f;
-	public Timer timerObject;
+	
+	public Timer timer;
 	public int phase = 0;
 	public float stepDelay = 0;
 	public Action interact;
@@ -29,8 +28,12 @@ public class StateMachine: MonoBehaviour {
 	public virtual void InstanceInitiate(StateMachine checkMachine){}
 	public virtual void InstanceUpdate(StateMachine checkMachine){}
 	public virtual void InstanceInteract(GameObject obj, Vector3 point, StateMachine checkMachine){}
+	public virtual List<InputMachine> InstanceHover(){
+		return null;
+	}
 
 	public void Initiate(){
+		timer = new Timer (this);
 		InstanceInitiate (this);
 	}
 

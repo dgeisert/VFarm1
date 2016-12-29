@@ -16,4 +16,8 @@ public class PlantMachine : StateMachine {
 		currentState.InstanceInteract (obj, point, this);
 	}
 
+	public override List<InputMachine> InstanceHover(){
+		return new List<InputMachine>(){StateMaster.instance.inputGather };
+	}
+
 }

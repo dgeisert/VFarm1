@@ -15,7 +15,7 @@ public class AnimalMachine : StateMachine {
 		} else {
 			UpdateState (StateMaster.instance.animalRoaming, this);
 		}
-		timerStart = Time.time;
+		timer.StartTimer ();
 	}
 
 	void Start(){

@@ -1,18 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Plant_Dry : StateMachine {
+public class Plant_Dry : PlantMachine {
 
 	public override void EnterState(StateMachine checkMachine){
-		checkMachine.timerDuration = checkMachine.GetComponent<PlantMachine> ().growTime * 2;
-		checkMachine.timerStart = Time.time;
+		checkMachine.timer.StartTimer (checkMachine.GetComponent<PlantMachine> ().growTime * 2);
 	}
 	public override void ExitState(StateMachine checkMachine){
 
 	}
 
 	public override void CheckUpdate(StateMachine checkMachine){
-		if (checkMachine.timerStart + checkMachine.timerDuration <= Time.time) {
+		if (checkMachine.timer.CheckTimer()) {
 			checkMachine.UpdateState (StateMaster.instance.plantWithered, checkMachine);
 		}
 	}
