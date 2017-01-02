@@ -6,10 +6,12 @@ using System;
 public class StateMachine: MonoBehaviour {
 	
 	public Timer timer;
+	public Timer secondaryTimer;
 	public int phase = 0;
 	public float stepDelay = 0;
 	public Action interact;
 	public static StateMaster master;
+	public Vector2 parentGround;
 
 	public StateMachine currentState;
 
@@ -35,6 +37,30 @@ public class StateMachine: MonoBehaviour {
 	public void Initiate(){
 		timer = new Timer (this);
 		InstanceInitiate (this);
+	}
+
+	public void Load(Transform tr, SaveObject so){
+		parentGround = so.parentGround;
+		transform.SetParent(MovingGround.instance.ground[parentGround]);
+		transform.localScale = tr.localScale;
+		transform.localRotation = tr.localRotation;
+		transform.localPosition = tr.localPosition;
+		phase = so.phase;
+		name = so.objName;
+		InputMachine.instance.gos.Add (gameObject);
+		InputMachine.instance.SetObjectParent (transform, true, this);
+		timer = new Timer (this);
+		if (so.secondaryTimerDuration != 0 && so.secondaryTimerDuration != null) {
+			secondaryTimer = new Timer (this);
+		}
+		UpdateState((StateMachine) StateMaster.instance.GetComponent(so.state), this);
+		Debug.Log (so.timerStart);
+		timer.timerStart = so.timerStart;
+		timer.timerDuration = so.timerDuration;
+		if (so.secondaryTimerDuration != 0 && so.secondaryTimerDuration != null) {
+			secondaryTimer.timerStart = so.secondaryTimerStart;
+			secondaryTimer.timerDuration = so.secondaryTimerDuration;
+		}
 	}
 
 	public void Update(){

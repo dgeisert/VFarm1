@@ -4,16 +4,16 @@ using System.Collections;
 public class Tree_Growing : TreeMachine {
 
 	public override void EnterState(StateMachine checkMachine){
-		checkMachine.GetComponent<TreeMachine>().growthTimer.StartTimer (60);
+		checkMachine.secondaryTimer.StartTimer (60);
 	}
 	public override void ExitState(StateMachine checkMachine){
 
 	}
 
 	public override void CheckUpdate(StateMachine checkMachine){
-		if (checkMachine.GetComponent<TreeMachine>().growthTimer.CheckTimer (60)) {
+		if (checkMachine.secondaryTimer.CheckTimer (60)) {
 			checkMachine.transform.localScale *= 1 + (0.02f / checkMachine.transform.localScale.x);
-			checkMachine.GetComponent<TreeMachine>().growthTimer.StartTimer (60);
+			checkMachine.secondaryTimer.StartTimer (60);
 		}
 	}
 
@@ -21,11 +21,11 @@ public class Tree_Growing : TreeMachine {
 		TreeMachine tm = checkMachine.GetComponentInParent<TreeMachine> ();
 		if (tm.timer.CheckTimer (true)) {
 			if (checkMachine.phase < checkMachine.transform.localScale.x * 10) {
-				PlayerMachine.instance.AddResource ("wood", 1);
 				checkMachine.phase++;
-			} else {
 				PlayerMachine.instance.AddResource ("wood", 1);
+			} else {
 				checkMachine.UpdateState (StateMaster.instance.treeFallen, checkMachine);
+				PlayerMachine.instance.AddResource ("wood", 1);
 				return;
 			}
 			tm.timer.StartTimer (tm.chopTime, true, InputMachine.instance.reticle.getTimerLocation(), numbers: false);

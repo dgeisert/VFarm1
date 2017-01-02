@@ -9,8 +9,7 @@ public class MovingGround : MonoBehaviour {
 	public float squareScale = 100;
 	public static MovingGround instance;
 
-	// Use this for initialization
-	void Start () {
+	public void Setup () {
 		instance = this;
 		for (int i = 0; i < layout.x*layout.y; i++) {
 			Transform child = transform.GetChild (i);
@@ -19,8 +18,7 @@ public class MovingGround : MonoBehaviour {
 			}
 		}
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		if (PlayerMachine.playerObject != null) {
 			foreach (KeyValuePair<Vector2, Transform> kvp in ground) {

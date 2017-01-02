@@ -13,7 +13,7 @@ public class StateMaster : MonoBehaviour {
 
 	public static StateMaster instance;
 
-	public void Awake(){
+	public void Setup(){
 		StateMaster.instance = this;
 		timer = (GameObject)Resources.Load<GameObject> ("Timer");
 

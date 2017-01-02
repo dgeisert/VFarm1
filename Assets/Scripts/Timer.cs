@@ -1,26 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Timer {
 
-	public float timerStart;
+	public DateTime timerStart;
 	public float timerDuration = 1f;
 	public TimerObject timerObject;
 	public StateMachine sm;
 
 	public Timer(StateMachine setSm){
-		timerStart = Time.time;
+		timerStart = DateTime.Now;
 		sm = setSm;
 	}
 	public Timer(){
-		timerStart = Time.time;
+		timerStart = DateTime.Now;
 	}
 
 	public void StartTimer(float duration = -1, bool hasTimerObject = false, Transform parent = null, bool bar = true, bool numbers = true){
 		if (duration != -1) {
 			timerDuration = duration;
 		}
-		timerStart = Time.time;
+		timerStart = DateTime.Now;
 		if (hasTimerObject) {
 			if (timerObject == null) {
 				GameObject go = (GameObject) GameObject.Instantiate(StateMaster.instance.timer);
@@ -38,21 +39,21 @@ public class Timer {
 	}
 	public bool CheckTimer(bool immediate = false){
 		if (immediate) {
-			return (timerStart + timerDuration < Time.time) && (timerStart + timerDuration + 0.2f > Time.time);
+			return ((DateTime.Now - timerStart).TotalSeconds > timerDuration) && ((DateTime.Now - timerStart).TotalSeconds < timerDuration + 0.2f);
 		} else {
-			return (timerStart + timerDuration < Time.time);
+			return ((DateTime.Now - timerStart).TotalSeconds > timerDuration);
 		}
 	}
 	public bool CheckTimer(float time){
-		return (timerStart + time < Time.time);
+		return (DateTime.Now - timerStart).TotalSeconds > timerDuration;
 	}
 	public bool TimerActive(){
-		return (timerStart + timerDuration > Time.time);
+		return (DateTime.Now - timerStart).TotalSeconds < timerDuration;
 	}
 	public float TimerPercent(){
-		return Mathf.Min (Mathf.Max ((Time.time - timerStart)/timerDuration, 0), 1);
+		return Mathf.Min (Mathf.Max (((float)(DateTime.Now - timerStart).TotalSeconds)/timerDuration, 0), 1);
 	}
 	public float TimerRemaining(){
-		return (timerDuration + timerStart - Time.time);
+		return (float)(DateTime.Now - timerStart).TotalSeconds;
 	}
 }

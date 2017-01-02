@@ -66,6 +66,7 @@ public class ES2Init : MonoBehaviour
 		ES2TypeManager.types[typeof(UnityEngine.Texture)] = new ES2_Texture();
 		ES2TypeManager.types[typeof(System.Collections.DictionaryEntry)] = new ES2UserType_SystemCollectionsDictionaryEntry();
 		ES2TypeManager.types[typeof(UnityEngine.AudioClip)] = new ES2_AudioClip();
+		ES2TypeManager.types[typeof(SaveObject)] = new ES2UserType_SaveObject();
 
 		ES2.initialised = true;
 	}

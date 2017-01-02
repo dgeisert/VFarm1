@@ -6,10 +6,9 @@ public class TreeMachine : StateMachine {
 
 	public GameObject logs, tree;
 	public float chopTime = 1;
-	public Timer growthTimer;
 
 	public override void InstanceInitiate(StateMachine checkMachine){
-		growthTimer = new Timer (this);
+		secondaryTimer = new Timer (this);
 		UpdateState (StateMaster.instance.treeGrowing, this);
 	}
 

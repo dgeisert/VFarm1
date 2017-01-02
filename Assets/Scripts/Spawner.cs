@@ -29,6 +29,9 @@ public class Spawner : MonoBehaviour {
 				sm.Initiate ();
 			}
 			InputMachine.instance.gos.Add (go);
+			InputMachine.instance.SetObjectParent (go.transform, true, sm);
 		}
+		InputMachine.instance.CheckObjects ();
+		Destroy (gameObject);
 	}
 }

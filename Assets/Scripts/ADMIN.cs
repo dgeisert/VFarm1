@@ -13,16 +13,16 @@ public class ADMIN : StateMachine {
 	public override void InstanceInteract(GameObject obj, Vector3 point, StateMachine checkMachine){
 		switch (action) {
 		case "DestroyGos":
-			DestroyGos ();
+			ADMIN.DestroyGos ();
 			break;
 		case "CreateGos":
-			CreateGos ();
+			ADMIN.CreateGos ();
 			break;
 		case "Save":
-			Save ();
+			ADMIN.Save ();
 			break;
 		case "Load":
-			Load ();
+			ADMIN.Load ();
 			break;
 		default:
 			break;
@@ -39,21 +39,26 @@ public class ADMIN : StateMachine {
 		}
 	}
 
-	public void DestroyGos(){
+	public static void DestroyGos(){
 		foreach(GameObject go in InputMachine.instance.gos){
 			Destroy(go);
 		}
+		GameObject.FindObjectOfType<ADMIN>().StartCoroutine (GameObject.FindObjectOfType<ADMIN>().ClearGos ());
 	}
-	public void CreateGos(){
+	public IEnumerator ClearGos(){
+		yield return null;
+		InputMachine.instance.gos.RemoveAll (item => item == null);
+	}
+	public static void CreateGos(){
 		foreach (GameObject go in InputMachine.instance.spawners) {
 			GameObject.Instantiate (go);
 		}
 		InputMachine.instance.CheckObjects ();
 	}
-	public void Save(){
+	public static void Save(){
 		PlayerMachine.instance.SaveGos ();
 	}
-	public void Load(){
+	public static void Load(){
 		PlayerMachine.instance.LoadGos ();
 	}
 	public void SetText(){

@@ -58,6 +58,7 @@ public class Input_Teleport : InputMachine {
 
 	IEnumerator Teleport(Vector3 point, float duration){
 		InputMachine.instance.DipToColor (new Color(0f,0f,0f,0.5f), duration);
+		PlayerMachine.instance.SavePlayerPosition ();
 		yield return new WaitForSeconds (duration);
 		PlayerMachine.playerObject.transform.position = point
 			+ PlayerMachine.playerObject.transform.up * InputMachine.playerHeight;

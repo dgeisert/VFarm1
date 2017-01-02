@@ -12,11 +12,9 @@ public class InputMachine: StateMachine {
 
 	public Camera thisCamera;
 	public RoomMachine currentRoom;
-	public float renderDistance = 50;
-	public float baseRenderDistance = 50;
+	public float renderDistance = 60;
 	float lastSwipeTime;
 	bool is_swipe = false;
-	float backgroundMult = 0.032f;
 	public float deltaTime;
 	public TextMesh fpsText;
 
@@ -44,9 +42,7 @@ public class InputMachine: StateMachine {
 	public List<Transform> repositionWithMoves;
 
 	void Start(){
-		if (GetComponent<Camera> () != null) {
-			Initiate ();
-		} else {
+		if (GetComponent<Camera> () == null) {
 			string script = this.GetType ().ToString ();
 			setRightHand = Resources.Load("Inputs/Hands/Primary/" + script) as GameObject;
 			setLeftHand = Resources.Load("Inputs/Hands/Secondary/" + script) as GameObject;
@@ -185,20 +181,16 @@ public class InputMachine: StateMachine {
 			PlayerMachine.playerObject.transform.Rotate (0, 45, 0);
 		}
 		if(Input.GetKeyDown(KeyCode.M)){
-			foreach(GameObject go in gos){
-				Destroy(go);
-			}
+			ADMIN.DestroyGos ();
 		}
 		if(Input.GetKeyDown(KeyCode.N)){
-			foreach (GameObject go in spawners) {
-				GameObject.Instantiate (go);
-			}
+			ADMIN.CreateGos ();
 		}
 		if(Input.GetKeyDown(KeyCode.K)){
-			PlayerMachine.instance.SaveGos ();
+			ADMIN.Save ();
 		}
 		if(Input.GetKeyDown(KeyCode.L)){
-			PlayerMachine.instance.LoadGos ();
+			ADMIN.Load ();
 		}
 		Gaze (GetSightedPoint ());
 		currentState.InstanceUpdate (this);
@@ -246,41 +238,54 @@ public class InputMachine: StateMachine {
 						go.SetActive (true);
 					}
 				}
+				SetObjectParent (go.transform, false, go.GetComponent<StateMachine>());
 			}
 			foreach (Transform tr in repositionWithMoves) {
-				bool reset = false;
-				if (tr.localPosition.x > MovingGround.instance.squareScale / 2) {
-					reset = true;
-				}
-				if (tr.localPosition.x < -MovingGround.instance.squareScale / 2) {
-					reset = true;
-				}
-				if (tr.localPosition.z > MovingGround.instance.squareScale / 2) {
-					reset = true;
-				}
-				if (tr.localPosition.z < -MovingGround.instance.squareScale / 2) {
-					reset = true;
-				}
-				if (reset) {
-					tr.SetParent (
-						MovingGround.instance.ground[
-							new Vector2(
-								(Mathf.Round(tr.position.x/MovingGround.instance.squareScale) + MovingGround.instance.layout.x * 1000) % MovingGround.instance.layout.x,
-								(Mathf.Round(tr.position.z/MovingGround.instance.squareScale) + MovingGround.instance.layout.y * 1000) % MovingGround.instance.layout.y
-							)]);
-					while (tr.localPosition.x > MovingGround.instance.squareScale / 2) {
-						tr.localPosition -= new Vector3(MovingGround.instance.squareScale, 0, 0);
-					}
-					while (tr.localPosition.x < -MovingGround.instance.squareScale / 2) {
-						tr.localPosition += new Vector3(MovingGround.instance.squareScale, 0, 0);
-					}
-					while (tr.localPosition.z > MovingGround.instance.squareScale / 2) {
-						tr.localPosition -= new Vector3(0, 0, MovingGround.instance.squareScale);
-					}
-					while (tr.localPosition.z < -MovingGround.instance.squareScale / 2) {
-						tr.localPosition += new Vector3(0, 0, MovingGround.instance.squareScale);
-					}
-				}
+				SetObjectParent (tr);
+			}
+		}
+	}
+	public void SetObjectParent(Transform tr, bool reset = false, StateMachine sm = null){
+		Vector2 newParentGround = 
+			new Vector2 (
+				(Mathf.Round (tr.position.x / MovingGround.instance.squareScale) + MovingGround.instance.layout.x * 1000) % MovingGround.instance.layout.x,
+				(Mathf.Round (tr.position.z / MovingGround.instance.squareScale) + MovingGround.instance.layout.y * 1000) % MovingGround.instance.layout.y
+			);
+		if (tr.parent == null) {
+			if (sm != null) {
+				sm.parentGround = newParentGround;
+			}
+			tr.SetParent (MovingGround.instance.ground[newParentGround]);
+			return;
+		}
+		if (tr.position.x - tr.parent.position.x > MovingGround.instance.squareScale / 2) {
+			reset = true;
+		}
+		if (tr.position.x - tr.parent.position.x < -MovingGround.instance.squareScale / 2) {
+			reset = true;
+		}
+		if (tr.position.z - tr.parent.position.z > MovingGround.instance.squareScale / 2) {
+			reset = true;
+		}
+		if (tr.position.z - tr.parent.position.z < -MovingGround.instance.squareScale / 2) {
+			reset = true;
+		}
+		if (reset) {
+			if (sm != null) {
+				sm.parentGround = newParentGround;
+			}
+			tr.SetParent (MovingGround.instance.ground[newParentGround]);
+			while (tr.position.x - tr.parent.position.x > MovingGround.instance.squareScale / 2) {
+				tr.position -= new Vector3(MovingGround.instance.squareScale, 0, 0);
+			}
+			while (tr.position.x - tr.parent.position.x < -MovingGround.instance.squareScale / 2) {
+				tr.position += new Vector3(MovingGround.instance.squareScale, 0, 0);
+			}
+			while (tr.position.z - tr.parent.position.z > MovingGround.instance.squareScale / 2) {
+				tr.position -= new Vector3(0, 0, MovingGround.instance.squareScale);
+			}
+			while (tr.position.z - tr.parent.position.z < -MovingGround.instance.squareScale / 2) {
+				tr.position += new Vector3(0, 0, MovingGround.instance.squareScale);
 			}
 		}
 	}
