@@ -12,7 +12,7 @@ public class InputMachine: StateMachine {
 
 	public Camera thisCamera;
 	public RoomMachine currentRoom;
-	public float renderDistance = 60;
+	public float renderDistance = 50;
 	float lastSwipeTime;
 	bool is_swipe = false;
 	public float deltaTime;

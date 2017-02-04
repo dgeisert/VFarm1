@@ -54,7 +54,6 @@ public class StateMachine: MonoBehaviour {
 			secondaryTimer = new Timer (this);
 		}
 		UpdateState((StateMachine) StateMaster.instance.GetComponent(so.state), this);
-		Debug.Log (so.timerStart);
 		timer.timerStart = so.timerStart;
 		timer.timerDuration = so.timerDuration;
 		if (so.secondaryTimerDuration != 0 && so.secondaryTimerDuration != null) {

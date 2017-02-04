@@ -46,7 +46,7 @@ public class ReticleMachine : StateMachine {
 	public override void InstanceUpdate(StateMachine checkMachine) {
 		Vector3 targetLocation = transform.position + 2 * (transform.position - PlayerMachine.playerObject.transform.position);
 		if (reticleInstance != null) {
-			reticleInstance.transform.rotation = InputMachine.instance.transform.rotation;
+			reticleInstance.transform.localEulerAngles = new Vector3 (0, InputMachine.instance.transform.localEulerAngles.y, 0);
 		}
 		if (timer.CheckTimer()) {
 			is_nearObjects = false;
